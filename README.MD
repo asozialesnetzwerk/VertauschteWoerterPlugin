@@ -1,4 +1,5 @@
-#How to get the plugin:
+# Vertauschte-Wörter-Plugin
+## How to get the plugin:
 1. download it
 2. unzip it
 3. open chrome on pc
