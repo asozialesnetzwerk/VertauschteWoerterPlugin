@@ -100,7 +100,6 @@ function replaceText(input) {
 
     for (let i = starts_with_text ? 0 : 1; i < text.length; i++) {
         let replacement = text[i].toLowerCase();
-        console.log(replacement);
 
         for (let j = 0; j < keys.length; j++) {
             if(replacement.indexOf(keys[j]) !== -1) {
