@@ -15,6 +15,7 @@ let json  = {
 
     "ironisch": "erotisch",
     "ironie": "erotik",
+    "ironiker": "erotiker",
 
     "problem": "ekzem",
     "problems": "ekzems",
