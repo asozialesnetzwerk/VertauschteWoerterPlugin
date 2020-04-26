@@ -3,7 +3,8 @@
 	"name": "Vertauschte Wörter!",
 	"version": "1.0.0",
 
-	"description": "",
+	"description": "Vertauscht Wörter auf Webseiten.",
+
 	"icons": {
 		"16": "img/icon_16.png",
 		"48": "img/icon_48.png",
@@ -16,8 +17,8 @@
 		"js": [
 			"js/plugin.js"
 		]
-	}
-	],
+	}],
+
 	"permissions": [
 	     "tabs"
 	]

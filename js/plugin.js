@@ -1,41 +1,35 @@
 let json  = {
     "aggressiv": "attraktiv",
-    "aggressivst": "attraktivst",
-    "aggressivität": "attraktivität",
 
     "amüsant": "relevant",
     "amüsanz": "relevanz",
 
     "ministerium": "mysterium",
-    "ministeriums": "mysteriums",
     "ministerien": "mysterien",
 
     "bundestag": "schützenverein",
-    "bundestags": "schützenvereins",
 
     "ironisch": "erotisch",
+    "ironien": "erotiken",
     "ironie": "erotik",
     "ironiker": "erotiker",
 
     "problem": "ekzem",
-    "problems": "ekzems",
 
     "kritisch": "kryptisch",
-    "kritischst": "kryptischst",
     "kritik": "kryptik",
 
-    "provozieren": "produzieren",
-    "provoziert": "produziert",
+    "provozier": "produzier",
 
     "arbeitnehmer": "arbeitgeber",
-    "arbeitsnehmers": "arbeitgebers"
 };
 
-const keys = Object.keys(json);
+let keys = Object.keys(json);
 for (let i = 0; i < keys.length; i++) {
     json[json[keys[i]]] = keys[i]; //value as key with old key as new value
 }
 const words = json;
+keys = Object.keys(words);
 
 function replaceVertauschteWoerter(e){
     if(void 0!== e && e &&!(e.isContentEditable===!0||null!==e.parentNode&&e.parentNode.isContentEditable)){
@@ -65,9 +59,6 @@ var observer = new MutationObserver(function (e) {
 observer.observe(document.body,{
     childList:!0,subtree:!0
 });
-
-
-
 
 function firstLetterIsUpperCase(str) {
     if(str.length === 0) return false;
@@ -108,19 +99,13 @@ function replaceText(input) {
     let out = "";
 
     for (let i = starts_with_text ? 0 : 1; i < text.length; i++) {
-        let replacement = words[text[i].toLocaleLowerCase()];
-        if(replacement === undefined) {
-            replacement = text[i];
+        let replacement = text[i].toLowerCase();
+        console.log(replacement);
 
-            const e = text[i].toLocaleLowerCase().lastIndexOf('e');
-            if(e > 0) {
-                let replacement2 = words[text[i].substr(0, e).toLocaleLowerCase()];
-                if(replacement2 === undefined) {
-                    replacement2 = words[text[i].substr(0, e + 1).toLocaleLowerCase()];
-                }
-                if(replacement2 !== undefined) {
-                    replacement = replacement2 + text[i].substr(e);
-                }
+        for (let j = 0; j < keys.length; j++) {
+            if(replacement.indexOf(keys[j]) !== -1) {
+                replacement = replacement.replace(keys[j], words[keys[j]]);
+                break;
             }
         }
 
@@ -134,6 +119,7 @@ function replaceText(input) {
 
         out += getNextTextPart(i, replacement);
     }
+
 
     return out;
 }
