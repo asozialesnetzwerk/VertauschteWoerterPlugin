@@ -1,4 +1,4 @@
-let json  = {
+const defaultJson = `{
     "aggressiv": "attraktiv",
 
     "amüsant": "relevant",
@@ -21,15 +21,36 @@ let json  = {
 
     "provozier": "produzier",
 
-    "arbeitnehmer": "arbeitgeber",
-};
+    "arbeitnehmer": "arbeitgeber"
+}`;
 
-let keys = Object.keys(json);
-for (let i = 0; i < keys.length; i++) {
-    json[json[keys[i]]] = keys[i]; //value as key with old key as new value
+
+let json;
+let keys;
+let words;
+
+
+function load() {
+    chrome.storage.local.get({
+        words: defaultJson
+    }, function(items) {
+        json = JSON.parse(items.words);
+
+        //load:
+        if(json === undefined) json = JSON.parse(defaultJson);
+
+        keys = Object.keys(json);
+        for (let i = 0; i < keys.length; i++) {
+            json[json[keys[i]]] = keys[i]; //value as key with old key as new value
+        }
+        words = json;
+        keys = Object.keys(words);
+
+        replaceVertauschteWoerter(document.body);
+        document.title = replaceText(document.title);
+    });
 }
-const words = json;
-keys = Object.keys(words);
+
 
 function replaceVertauschteWoerter(e) {
     if(void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)){
@@ -40,9 +61,6 @@ function replaceVertauschteWoerter(e) {
         if(3 === e.nodeType) e.nodeValue= replaceText(e.nodeValue);
     }
 }
-
-replaceVertauschteWoerter(document.body);
-document.title = replaceText(document.title);
 
 const observer = new MutationObserver(function (e) {
     const r = e.length;
@@ -77,18 +95,18 @@ function replaceText(input) {
     if(input === "") return "";
 
     const text = input.split(/[^a-zA-ZÄÖÜäöü]+/); // everything that isn't word
-    const not_text = input.split(/[a-zA-ZÄÖÜäöü]+/);  //everything that is word
+    const notText = input.split(/[a-zA-ZÄÖÜäöü]+/);  //everything that is word
 
 
-    const starts_with_text = text[0].length > 0;
+    const startsWithText = text[0].length > 0;
 
     function getNextTextPart(index, replacedText) {
         let str = "";
-        if(starts_with_text) {
+        if(startsWithText) {
             str += replacedText;
-            if(index + 1 < not_text.length) str += not_text[index + 1];
+            if(index + 1 < notText.length) str += notText[index + 1];
         } else {
-            if(index - 1 < not_text.length) str += not_text[index - 1];
+            if(index - 1 < notText.length) str += notText[index - 1];
             str += replacedText;
         }
         return str;
@@ -96,7 +114,7 @@ function replaceText(input) {
 
     let out = "";
 
-    for (let i = starts_with_text ? 0 : 1; i < text.length; i++) {
+    for (let i = startsWithText ? 0 : 1; i < text.length; i++) {
         let replacement = text[i].toLowerCase();
 
         for (let j = 0; j < keys.length; j++) {
@@ -119,3 +137,5 @@ function replaceText(input) {
 
     return out;
 }
+
+load();
