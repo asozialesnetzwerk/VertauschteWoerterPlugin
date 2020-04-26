@@ -31,27 +31,25 @@ for (let i = 0; i < keys.length; i++) {
 const words = json;
 keys = Object.keys(words);
 
-function replaceVertauschteWoerter(e){
-    if(void 0!== e && e &&!(e.isContentEditable===!0||null!==e.parentNode&&e.parentNode.isContentEditable)){
+function replaceVertauschteWoerter(e) {
+    if(void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)){
         if(e.hasChildNodes()){
-            var r = e.childNodes,
-                t=r.length,n=0;
-            for(n;n<t;n++) replaceVertauschteWoerter(r[n])
+            const childes = e.childNodes;
+            for(let n = 0; n < childes.length; n++) replaceVertauschteWoerter(childes[n])
         }
-        3==e.nodeType&&(e.nodeValue= replaceText(e.nodeValue))
+        if(3 === e.nodeType) e.nodeValue= replaceText(e.nodeValue);
     }
 }
 
-replaceVertauschteWoerter(document.body),
-    document.title = replaceText(document.title);
+replaceVertauschteWoerter(document.body);
+document.title = replaceText(document.title);
 
-var observer = new MutationObserver(function (e) {
-    var r = e.length, t = 0;
-    for (t; t < r; t++) {
-        var n = e[t].addedNodes.length, o = 0;
-        for (o; o < n; o++) {
-            var a = e[t].addedNodes[o];
-            replaceVertauschteWoerter(a)
+const observer = new MutationObserver(function (e) {
+    const r = e.length;
+    for (let t = 0; t < r; t++) {
+        const n = e[t].addedNodes.length;
+        for (let o = 0; o < n; o++) {
+            replaceVertauschteWoerter(e[t].addedNodes[o])
         }
     }
 });
@@ -118,7 +116,6 @@ function replaceText(input) {
 
         out += getNextTextPart(i, replacement);
     }
-
 
     return out;
 }
