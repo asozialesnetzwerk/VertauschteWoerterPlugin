@@ -2,7 +2,7 @@ fetch("defaultWords.json")
     .then(function(response) {
             response.text().then(load);
         }, function (error) {
-            error.text().then(console.log);
+            error.then(console.log);
         }
     );
 
