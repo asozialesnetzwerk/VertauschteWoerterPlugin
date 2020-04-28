@@ -91,8 +91,11 @@ function replaceText(input) {
             if (replacement !== text[i] && replacement .length > 0) {
                 if (text[i].toUpperCase() === text[i]) { //checks if string is uppercase
                     replacement = replacement.toUpperCase();
-                } else if (text[i].substr(0, 1).toLocaleUpperCase() === text[i].substr(0, 1)) { //checks if first letter is uppercase
-                    replacement = replacement.substr(0, 1).toUpperCase() + replacement.substr(1); //sets first letter uppercase, to match case with the original word
+                } else {
+                    const firstLetterOfText = text[i].charAt(0);
+                    if (firstLetterOfText.toUpperCase() === firstLetterOfText) { //checks if first letter is uppercase
+                        replacement = replacement.charAt(0).toUpperCase() + replacement.slice(1); //sets first letter uppercase, to match case with the original word
+                    }
                 }
             }
 
