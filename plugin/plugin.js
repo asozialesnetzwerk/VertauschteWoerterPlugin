@@ -4,7 +4,7 @@ fetch("defaultWords.json")
     .then(function(response) {
             response.text().then(load);
         }, function (error) {
-            error.then(console.log);
+            error.then(console.error);
         }
     );
 
@@ -55,31 +55,52 @@ observer.observe(document.body,{
     childList:!0,subtree:!0
 });
 
+function isText(val) {
+    if (typeof val !== "string") return false;
+    if (val.length === 0) return false;
+    return val.replace(noTextRegex, "").length === 0;
+}
+
+function arrIsEmpty(arr) {
+    if (!Array.isArray(arr)) return true;
+    if (arr.length === 0) return true;
+    for (const arrElement of arr) {
+        if (arrElement.length > 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+const noTextRegex = /[^a-zA-ZÄÖÜäöü]+/gm;
+const textRegex = /[a-zA-ZÄÖÜäöü]+/gm;
 function replaceText(input) {
     if(input.length === 0) return "";
 
-    const text = input.split(/[^a-zA-ZÄÖÜäöü]+/); // everything that isn't word
-    const notText = input.split(/[a-zA-ZÄÖÜäöü]+/);  //everything that is word
+    const text = input.split(noTextRegex); // everything that isn't word
 
-
-    const startsWithText = text[0].length > 0;
-
-    function getNextTextPart(index, replacedText) {
-        let str = "";
-        if(startsWithText) {
-            str += replacedText;
-            if(index + 1 < notText.length) str += notText[index + 1];
-        } else {
-            if(index - 1 < notText.length) str += notText[index - 1];
-            str += replacedText;
-        }
-        return str;
+    if (arrIsEmpty(text)) {
+        return input;
     }
 
+    const notText = input.split(textRegex);  //everything that is word
+
+    let noTextIndex = 0;
+    let textIndex = 0;
     let out = "";
-    for (let i = startsWithText ? 0 : 1; i < text.length; i++) {
-        if(text[i].length > 0) {
-            let replacement = text[i].toLowerCase();
+
+    if (!isText(input[0])) { // if not starts with text
+        out = notText[0];
+        noTextIndex++;
+
+        if (text[0].length === 0) {
+            textIndex = 1;
+        }
+    }
+
+    for (; textIndex < text.length; textIndex++) {
+        if(text[textIndex].length > 0) {
+            let replacement = text[textIndex].toLowerCase();
 
             for (let j = 0; j < keys.length; j++) {
                 if (replacement.indexOf(keys[j]) !== -1) {
@@ -88,19 +109,26 @@ function replaceText(input) {
                 }
             }
 
-            if (replacement !== text[i] && replacement .length > 0) {
-                if (text[i].toUpperCase() === text[i]) { //checks if string is uppercase
+            if (replacement !== text[textIndex] && replacement .length > 0) {
+                if (text[textIndex].toUpperCase() === text[textIndex]) { //checks if string is uppercase
                     replacement = replacement.toUpperCase();
                 } else {
-                    const firstLetterOfText = text[i].charAt(0);
+                    const firstLetterOfText = text[textIndex].charAt(0);
                     if (firstLetterOfText.toUpperCase() === firstLetterOfText) { //checks if first letter is uppercase
                         replacement = replacement.charAt(0).toUpperCase() + replacement.slice(1); //sets first letter uppercase, to match case with the original word
                     }
                 }
             }
 
-            out += getNextTextPart(i, replacement);
+            out += replacement;
         }
+        if (noTextIndex < notText.length) {
+            out += notText[noTextIndex];
+            noTextIndex += 1;
+        }
+    }
+    for (; noTextIndex < notText.length; noTextIndex++) {
+        out += notText[noTextIndex];
     }
     return out;
 }
