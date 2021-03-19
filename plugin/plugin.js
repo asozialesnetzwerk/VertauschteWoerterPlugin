@@ -122,15 +122,19 @@ function replaceText(input) {
     for (; textIndex < text.length; textIndex++) {
         if(text[textIndex].length > 0) {
             let replacement = text[textIndex].toLowerCase();
+            let replaced = false;
 
             for (let j = 0; j < keys.length; j++) {
                 if (replacement.indexOf(keys[j]) !== -1) {
+                    replaced = true;
                     replacement = replacement.replace(keys[j], words[keys[j]]);
                     break;
                 }
             }
 
-            if (replacement !== text[textIndex].toLowerCase() && replacement .length > 0) {
+            if(!replaced) {
+                replacement = text[textIndex];
+            } else if (replacement .length > 0) {
                 if (text[textIndex].toUpperCase() === text[textIndex]) { //checks if string is uppercase
                     replacement = replacement.toUpperCase();
                 } else {
