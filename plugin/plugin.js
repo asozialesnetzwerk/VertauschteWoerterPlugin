@@ -130,7 +130,7 @@ function replaceText(input) {
                 }
             }
 
-            if (replacement !== text[textIndex] && replacement .length > 0) {
+            if (replacement !== text[textIndex].toLowerCase() && replacement .length > 0) {
                 if (text[textIndex].toUpperCase() === text[textIndex]) { //checks if string is uppercase
                     replacement = replacement.toUpperCase();
                 } else {
