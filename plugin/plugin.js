@@ -43,6 +43,9 @@ chrome.storage.local.get({
     words = json;
     keys = Object.keys(words);
 
+    // sort from long to short to replace the longer once with higher priority
+    keys.sort((a,b) => b.length - a.length);
+
     replaceVertauschteWoerter(document.body);
     document.title = replaceText(document.title);
 });
