@@ -1,13 +1,31 @@
 let keys;
 let words;
-fetch("defaultWords.json")
-    .then(function(response) {
-            response.text().then(load);
-        }, function (error) {
-            error.then(console.error);
-        }
-    );
 
+load({
+    "aggressiv": "attraktiv",
+
+    "amüsant": "relevant",
+    "amüsanz": "relevanz",
+
+    "ministerium": "mysterium",
+    "ministerien": "mysterien",
+
+    "bundestag": "schützenverein",
+
+    "ironisch": "erotisch",
+    "ironien": "erotiken",
+    "ironie": "erotik",
+    "ironiker": "erotiker",
+
+    "problem": "ekzem",
+
+    "kritisch": "kryptisch",
+    "kritik": "kryptik",
+
+    "provozier": "produzier",
+
+    "arbeitnehmer": "arbeitgeber"
+});
 
 function load(defaultJson) {
     chrome.storage.local.get({
