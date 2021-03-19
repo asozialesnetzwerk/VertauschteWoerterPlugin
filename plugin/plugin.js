@@ -1,7 +1,7 @@
 let keys;
 let words;
 
-load({
+const defaultJson = `{
     "aggressiv": "attraktiv",
 
     "amüsant": "relevant",
@@ -24,29 +24,29 @@ load({
 
     "provozier": "produzier",
 
-    "arbeitnehmer": "arbeitgeber"
+    "arbeitnehmer": "arbeitgeber",
+    "arbeitsnehmer": "arbeitsgeber"
+}`;
+
+chrome.storage.local.get({
+    words: defaultJson
+}, function(items) {
+    let json = JSON.parse(items.words.toLowerCase());
+
+    //load:
+    if(json === undefined) json = JSON.parse(defaultJson);
+
+    keys = Object.keys(json);
+    for (let i = 0; i < keys.length; i++) {
+        json[json[keys[i]]] = keys[i]; //value as key with old key as new value
+    }
+    words = json;
+    keys = Object.keys(words);
+
+    replaceVertauschteWoerter(document.body);
+    document.title = replaceText(document.title);
 });
 
-function load(defaultJson) {
-    chrome.storage.local.get({
-        words: defaultJson
-    }, function(items) {
-        let json = JSON.parse(items.words.toLowerCase());
-
-        //load:
-        if(json === undefined) json = JSON.parse(defaultJson);
-
-        keys = Object.keys(json);
-        for (let i = 0; i < keys.length; i++) {
-            json[json[keys[i]]] = keys[i]; //value as key with old key as new value
-        }
-        words = json;
-        keys = Object.keys(words);
-
-        replaceVertauschteWoerter(document.body);
-        document.title = replaceText(document.title);
-    });
-}
 
 
 function replaceVertauschteWoerter(e) {

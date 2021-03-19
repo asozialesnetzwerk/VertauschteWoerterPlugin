@@ -1,0 +1,18 @@
+{
+  "description": "Vertauschte-Woerter-Plugin Optionen",
+  "manifest_version": 2,
+  "name": "vertauschte-woerter-optionen",
+  "version": "1.0",
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "16": "../img/icon_16.png",
+      "32": "../img/icon_32.png"
+    }
+  }
+
+}
