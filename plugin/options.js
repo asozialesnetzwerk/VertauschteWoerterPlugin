@@ -8,6 +8,8 @@ const defaultJson = `{
     "ministerien": "mysterien",
 
     "bundestag": "schützenverein",
+    "bundeskanzler": "schützenkönig",
+    "bundespräsident": "kassenwart",
 
     "ironisch": "erotisch",
     "ironien": "erotiken",
@@ -22,7 +24,13 @@ const defaultJson = `{
     "provozier": "produzier",
 
     "arbeitnehmer": "arbeitgeber",
-    "arbeitsnehmer": "arbeitsgeber"
+    "arbeitsnehmer": "arbeitsgeber",
+
+    "led": "lsd"
+
+    "brokkoli": "cannabis"
+
+    "wichtig": "witzig"
 }`;
 
 function saveOptions() {
