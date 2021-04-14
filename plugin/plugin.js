@@ -96,7 +96,7 @@ function arrIsEmpty(arr) {
 const noTextRegex = /[^a-zA-ZÄÖÜäöü]+/gm;
 const textRegex = /[a-zA-ZÄÖÜäöü]+/gm;
 function replaceText(input) {
-    if(input.length === 0) return "";
+    if(!input || input.length === 0) return "";
 
     const text = input.split(noTextRegex); // everything that isn't word
 
@@ -121,31 +121,7 @@ function replaceText(input) {
 
     for (; textIndex < text.length; textIndex++) {
         if(text[textIndex].length > 0) {
-            let replacement = text[textIndex].toLowerCase();
-            let replaced = false;
-
-            for (let j = 0; j < keys.length; j++) {
-                if (replacement.indexOf(keys[j]) !== -1) {
-                    replaced = true;
-                    replacement = replacement.replace(keys[j], words[keys[j]]);
-                    break;
-                }
-            }
-
-            if(!replaced) {
-                replacement = text[textIndex];
-            } else if (replacement .length > 0) {
-                if (text[textIndex].toUpperCase() === text[textIndex]) { //checks if string is uppercase
-                    replacement = replacement.toUpperCase();
-                } else {
-                    const firstLetterOfText = text[textIndex].charAt(0);
-                    if (firstLetterOfText.toUpperCase() === firstLetterOfText) { //checks if first letter is uppercase
-                        replacement = replacement.charAt(0).toUpperCase() + replacement.slice(1); //sets first letter uppercase, to match case with the original word
-                    }
-                }
-            }
-
-            out += replacement;
+            out += replaceWord(text[textIndex]);
         }
         if (noTextIndex < notText.length) {
             out += notText[noTextIndex];
@@ -156,4 +132,37 @@ function replaceText(input) {
         out += notText[noTextIndex];
     }
     return out;
+}
+
+function strIsUppercase(str) {
+    return str.toUpperCase() === str;
+}
+
+function replaceWord(word) {
+    if(!word || word.length === 0) return "";
+
+    let replaced = false;
+
+    let replacement = word.toLowerCase();
+
+    for (let j = 0; j < keys.length; j++) {
+        const index = replacement.indexOf(keys[j]);
+        if (index !== -1) {
+            replaced = true;
+            replacement = replaceWord(replacement.slice(0, index)) + words[keys[j]] + replaceWord(replacement.slice(index + keys[j].length));
+            break;
+        }
+    }
+
+    if(replaced) {
+        if (strIsUppercase(word)) { //checks if string is uppercase
+            replacement = replacement.toUpperCase();
+        } else {
+            if (strIsUppercase(word.charAt(0))) { //checks if first letter is uppercase
+                replacement = replacement.charAt(0).toUpperCase() + replacement.slice(1); //sets first letter uppercase, to match case with the original word
+            }
+        }
+        return replacement;
+    }
+    return word;
 }
