@@ -1,7 +1,7 @@
 const languages = ["de", "en"];
 
 const defaults = {
-    alwaysDe : false,
+    multipleLangs : false,
     de:
 `{
     "aggressiv": "attraktiv",

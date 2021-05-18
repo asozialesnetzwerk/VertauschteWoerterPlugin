@@ -1,5 +1,5 @@
 const elements = [];
-const alwaysReplaceDeCheckBox = document.getElementById("always_replace_de");
+const multipleLangsCheckBox = document.getElementById("multiple-langs");
 
 for (const lang of languages) {
     elements.push(document.getElementById("text_input_" + lang));
@@ -10,7 +10,7 @@ function saveOptions() {
     for (let i = 0; i < languages.length; i++) {
         obj[languages[i]] = elements[i].value;
     }
-    obj["alwaysDe"] = alwaysReplaceDeCheckBox.checked;
+    obj["multipleLangs"] = CheckBox.checked;
     save(obj);
 }
 
@@ -48,7 +48,7 @@ function restoreOptions() {
         for (let i = 0; i < languages.length; i++) {
             elements[i].value = items[languages[i]];
         }
-        alwaysReplaceDeCheckBox.checked = items["alwaysDe"];
+        CheckBox.checked = items["multipleLangs"];
     });
 }
 

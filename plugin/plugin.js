@@ -5,7 +5,7 @@ let words;
 const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
 
 chrome.storage.local.get(defaults, function(items) {
-    const langStr = items["alwaysDe"] ? "de" : getLanguageString();
+    const langStr = items["multipleLangs"] ? getLanguageString() : "de";
     const defaultJson = defaults[langStr];
 
     let json = JSON.parse(items[langStr].toLowerCase());
