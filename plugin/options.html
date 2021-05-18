@@ -2,19 +2,38 @@
 <html lang="de" >
 <head>
     <meta charset="UTF-8">
-    <title>Vertauschte-Wörter Optionen</title></head>
+    <title>Vertauschte-Wörter Optionen</title>
+
+    <style>
+        * {
+            color: #FFF;
+            background-color: #000;
+        }
+        body  {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
 
 <body>
+    <label for="text_input_de">Deutsche Vertauschungen:</label>
+    <textarea id="text_input_de"></textarea>
 
-<label for="text_input"></label>
-<textarea id="text_input"></textarea>
+    <label for="text_input_en">Englische Vertauschungen:</label>
+    <textarea id="text_input_en"></textarea>
 
+    <div>
+        <label for="always_replace_de">Nutze immer die deutschen Vertauschungen:</label>
+        <input type="checkbox" id="always_replace_de">
+    </div>
 
+    <div id="status"></div>
 
-<div id="status"></div>
-<button id="save">Save</button>
-<button id="reset">Reset</button>
-<script src="options.js"></script>
+    <button id="save">Save</button>
+    <button id="reset">Reset</button>
 
+    <script src="data.js"></script>
+    <script src="options.js"></script>
 </body>
 </html>

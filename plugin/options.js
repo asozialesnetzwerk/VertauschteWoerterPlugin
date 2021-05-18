@@ -1,47 +1,33 @@
-const defaultJson = `{
-    "aggressiv": "attraktiv",
+const elements = [];
+const alwaysReplaceDeCheckBox = document.getElementById("always_replace_de");
 
-    "amüsant": "relevant",
-    "amüsanz": "relevanz",
-
-    "ministerium": "mysterium",
-    "ministerien": "mysterien",
-
-    "bundestag": "schützenverein",
-
-    "ironisch": "erotisch",
-    "ironien": "erotiken",
-    "ironie": "erotik",
-    "ironiker": "erotiker",
-
-    "problem": "ekzem",
-
-    "kritisch": "kryptisch",
-    "kritik": "kryptik",
-
-    "provozier": "produzier",
-
-    "arbeitnehmer": "arbeitgeber",
-    "arbeitsnehmer": "arbeitsgeber"
-}`;
-
-function saveOptions() {
-    save(document.getElementById("text_input").value);
+for (const lang of languages) {
+    elements.push(document.getElementById("text_input_" + lang));
 }
 
-function save(value) {
-    try {
-        JSON.parse(value);
-    } catch(e) {
-        updateStatus("An error occurred: " + e.toString());
-        return;
+function saveOptions() {
+    const obj = {};
+    for (let i = 0; i < languages.length; i++) {
+        obj[languages[i]] = elements[i].value;
+    }
+    obj["alwaysDe"] = alwaysReplaceDeCheckBox.checked;
+    save(obj);
+}
+
+function save(obj) {
+    for (let i = 0; i < languages.length; i++) {
+        const lang = languages[i];
+        try {
+            JSON.parse(obj[lang]);
+        } catch (e) {
+            updateStatus(`Ein Fehler ist beim Parsen der Wörter in ${lang} aufgetreten: "${e.toString()}"`);
+            return;
+        }
     }
 
-    chrome.storage.local.set({
-        words: value
-    }, function () {
+    chrome.storage.local.set(obj, function () {
         // Update status to let user know options were saved
-        updateStatus("Options saved.");
+        updateStatus("Optionen gespeichert.");
     });
 }
 
@@ -58,15 +44,16 @@ function updateStatus(text) {
 // stored in chrome.storage.
 function restoreOptions() {
     // Use default value words = defaultJson.
-    chrome.storage.local.get({
-        words: defaultJson
-    }, function(items) {
-        document.getElementById("text_input").value = items.words;
+    chrome.storage.local.get(defaults, function(items) {
+        for (let i = 0; i < languages.length; i++) {
+            elements[i].value = items[languages[i]];
+        }
+        alwaysReplaceDeCheckBox.checked = items["alwaysDe"];
     });
 }
 
 function resetOptions() {
-    save(defaultJson);
+    save(defaults);
     restoreOptions();
 }
 

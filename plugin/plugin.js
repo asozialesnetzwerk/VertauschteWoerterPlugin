@@ -1,37 +1,14 @@
 let keys;
 let words;
 
-const defaultJson = `{
-    "aggressiv": "attraktiv",
 
-    "amüsant": "relevant",
-    "amüsanz": "relevanz",
+const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
 
-    "ministerium": "mysterium",
-    "ministerien": "mysterien",
+chrome.storage.local.get(defaults, function(items) {
+    const langStr = items["alwaysDe"] ? "de" : getLanguageString();
+    const defaultJson = defaults[langStr];
 
-    "bundestag": "schützenverein",
-
-    "ironisch": "erotisch",
-    "ironien": "erotiken",
-    "ironie": "erotik",
-    "ironiker": "erotiker",
-
-    "problem": "ekzem",
-
-    "kritisch": "kryptisch",
-    "kritik": "kryptik",
-
-    "provozier": "produzier",
-
-    "arbeitnehmer": "arbeitgeber",
-    "arbeitsnehmer": "arbeitsgeber"
-}`;
-
-chrome.storage.local.get({
-    words: defaultJson
-}, function(items) {
-    let json = JSON.parse(items.words.toLowerCase());
+    let json = JSON.parse(items[langStr].toLowerCase());
 
     //load:
     if(json === undefined) json = JSON.parse(defaultJson);
@@ -40,6 +17,7 @@ chrome.storage.local.get({
     for (let i = 0; i < keys.length; i++) {
         json[json[keys[i]]] = keys[i]; //value as key with old key as new value
     }
+
     words = json;
     keys = Object.keys(words);
 
@@ -50,7 +28,23 @@ chrome.storage.local.get({
     document.title = replaceText(document.title);
 });
 
+function getLanguageString() {
+    return languages[lang];
+}
 
+function stringToLanguage(langStr) {
+    if (typeof langStr !== "string") {
+        return -1;
+    }
+    langStr = langStr.toLowerCase();
+
+    for (let i = 0; i < languages.length; i++) {
+        if (langStr.indexOf(languages[i]) !== -1) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 function replaceVertauschteWoerter(e) {
     if(void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)){
