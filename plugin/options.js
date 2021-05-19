@@ -10,7 +10,7 @@ function saveOptions() {
     for (let i = 0; i < languages.length; i++) {
         obj[languages[i]] = elements[i].value;
     }
-    obj["multipleLangs"] = CheckBox.checked;
+    obj["multipleLangs"] = multipleLangsCheckBox.checked;
     save(obj);
 }
 
