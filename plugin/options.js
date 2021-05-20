@@ -18,7 +18,7 @@ function save(obj) {
     for (let i = 0; i < languages.length; i++) {
         const lang = languages[i];
         try {
-            JSON.parse(obj[lang]);
+            parseConfig(obj[lang]);
         } catch (e) {
             updateStatus(`Ein Fehler ist beim Parsen der Wörter in ${lang} aufgetreten: "${e.toString()}"`);
             return;
@@ -45,16 +45,20 @@ function updateStatus(text) {
 function restoreOptions() {
     // Use default value words = defaultJson.
     chrome.storage.local.get(defaults, function(items) {
-        for (let i = 0; i < languages.length; i++) {
-            elements[i].value = items[languages[i]];
-        }
-        CheckBox.checked = items["multipleLangs"];
+        displayOptions(items);
     });
 }
 
+function displayOptions(items) {
+    for (let i = 0; i < languages.length; i++) {
+        elements[i].value = items[languages[i]];
+    }
+    multipleLangsCheckBox.checked = items["multipleLangs"];
+}
+
 function resetOptions() {
-    save(defaults);
-    restoreOptions();
+    displayOptions(defaults);
+    updateStatus("Optionen zurückgesetzt, aber nicht gespeichert.");
 }
 
 document.addEventListener("Domcontentloaded", restoreOptions);

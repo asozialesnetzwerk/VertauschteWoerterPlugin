@@ -6,19 +6,25 @@ const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
 
 chrome.storage.local.get(defaults, function(items) {
     const langStr = items["multipleLangs"] ? getLanguageString() : "de";
-    const defaultJson = defaults[langStr];
+    const defaultConfig = defaults[langStr];
 
-    let json = JSON.parse(items[langStr].toLowerCase());
+    try {
+        words = parseConfig(items[langStr]);
+    } catch (e) {
+        if (typeof defaultConfig[langStr] !== "undefined") {
+            // lang is valid
+            try { // for migration to new config type
+                words = JSON.parse(items[langStr]);
+                items[langStr] = objToStr(words);
 
-    //load:
-    if(json === undefined) json = JSON.parse(defaultJson);
-
-    keys = Object.keys(json);
-    for (let i = 0; i < keys.length; i++) {
-        json[json[keys[i]]] = keys[i]; //value as key with old key as new value
+                chrome.storage.local.set(items, () => {});
+            } catch (e2) { /* something went wrong */}
+        }
     }
 
-    words = json;
+    //load:
+    if(typeof words === "undefined") words = parseConfig(defaultConfig);
+
     keys = Object.keys(words);
 
     // sort from long to short to replace the longer once with higher priority
@@ -87,8 +93,8 @@ function arrIsEmpty(arr) {
     return true;
 }
 
-const noTextRegex = /[^a-zA-ZÄÖÜäöü]+/gm;
-const textRegex = /[a-zA-ZÄÖÜäöü]+/gm;
+const noTextRegex = /[^a-zA-ZÄÖÜäöüßẞ]+/gm;
+const textRegex = /[a-zA-ZÄÖÜäöüßẞ]+/gm;
 function replaceText(input) {
     if(!input || input.length === 0) return "";
 
