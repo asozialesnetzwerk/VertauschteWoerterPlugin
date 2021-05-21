@@ -1,8 +1,9 @@
 # Vertauschte-Wörter-Plugin
 
 ## installation guide (Firefox):
-1. Go to https://github.com/asozialesnetzwerk/VertauschteWoerterPlugin/releases
-2. Download the .xpi file of the latest release
+1. Go to https://addons.mozilla.org/en-GB/firefox/addon/vertauschte-woerter
+2. Click add to firefox
+3. Click Add
 
 ## installation guide (Chromium):
 1. download it & unzip the downloaded file or clone the repo
