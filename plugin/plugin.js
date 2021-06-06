@@ -40,7 +40,7 @@ function getLanguageString() {
 
 function stringToLanguage(langStr) {
     if (typeof langStr !== "string") {
-        return -1;
+        return 0; // de as default
     }
     langStr = langStr.toLowerCase();
 
@@ -49,7 +49,7 @@ function stringToLanguage(langStr) {
             return i;
         }
     }
-    return -1;
+    return 0; // de as default
 }
 
 function replaceVertauschteWoerter(e) {
