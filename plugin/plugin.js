@@ -26,9 +26,10 @@ chrome.storage.local.get(defaults, function(items) {
     if(typeof words === "undefined") words = parseConfig(defaultConfig);
 
     // sort from long to short to replace the longer once with higher priority
+    const keys = Object.keys(words)
     keys.sort((a,b) => b.length - a.length);
 
-    words_regex = new RegExp("(" + Object.keys(words).join("|") + ")", "iu")
+    words_regex = new RegExp("(" + keys.join("|") + ")", "iu")
 
     replaceVertauschteWoerter(document.body);
     document.title = replaceText(document.title);
