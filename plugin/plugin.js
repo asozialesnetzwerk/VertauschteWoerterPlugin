@@ -25,10 +25,11 @@ chrome.storage.local.get(defaults, function(items) {
     //load:
     if(typeof words === "undefined") words = parseConfig(defaultConfig);
 
-    words_regex = new RegExp("(" + Object.keys(words).join("|") + ")", "iu")
-
     // sort from long to short to replace the longer once with higher priority
     keys.sort((a,b) => b.length - a.length);
+
+    words_regex = new RegExp("(" + Object.keys(words).join("|") + ")", "iu")
+
     replaceVertauschteWoerter(document.body);
     document.title = replaceText(document.title);
 });
@@ -79,7 +80,6 @@ observer.observe(document.body,{
 function replaceText(input) {
     return input.replace(words_regex, (word) => {
         const replacedWord = words[word.toLowerCase()]
-        console.log(word, replacedWord)
 
         if (word.length === 0) {
             return replacedWord;
