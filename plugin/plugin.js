@@ -72,24 +72,36 @@ observer.observe(document.body,{
 
 function replaceText(input) {
     return input.replace(words_regex, (word) => {
-        const replacedWord = words[word.toLowerCase()]
+        const replacedWord = words[word.toLowerCase()];
 
-        if (word.length === 0) {
-            return replacedWord;
+        const word_split = word.split(" ");
+        const replacement_split = replacedWord.split(" ");
+        if (word_split.length === replacement_split.length) {
+            for (let i = 0; i < word_split.length; i++) {
+                replacement_split[i] = adaptCase(word_split[i], replacement_split[i]);
+            }
+            return replacement_split.join(" ")
         }
-
-        if (strIsUppercase(word)) {
-            return replacedWord.toUpperCase();
-        }
-
-        if (strIsUppercase(word[0])) {
-            return replacedWord[0].toUpperCase() + replacedWord.substr(1);
-        }
-
-        return replacedWord;
+        return adaptCase(word, replacedWord);
     })
 }
 
 function strIsUppercase(str) {
     return str.toUpperCase() === str;
+}
+
+function adaptCase(word, replacedWord) {
+    if (word.length === 0) {
+        return replacedWord;
+    }
+
+    if (strIsUppercase(word)) {
+        return replacedWord.toUpperCase();
+    }
+
+    if (strIsUppercase(word[0])) {
+        return replacedWord[0].toUpperCase() + replacedWord.substr(1);
+    }
+
+    return replacedWord;
 }
