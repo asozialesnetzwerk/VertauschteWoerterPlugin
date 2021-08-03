@@ -4,23 +4,15 @@ let words_regex;
 
 const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
 
-chrome.storage.local.get(defaults, function(items) {
+chrome.storage.local.get(CONFIG_KEYS, function(items) {
+    if (!items) {
+        items = defaults;
+    }
+
     const langStr = items["multipleLangs"] ? getLanguageString() : "de";
     const defaultConfig = defaults[langStr];
 
-    try {
-        words = parseConfig(items[langStr]);
-    } catch (e) {
-        if (typeof defaultConfig[langStr] !== "undefined") {
-            // lang is valid
-            try { // for migration to new config type
-                words = JSON.parse(items[langStr]);
-                items[langStr] = objToStr(words);
-
-                chrome.storage.local.set(items, () => {});
-            } catch (e2) { /* something went wrong */}
-        }
-    }
+    words = parseConfig(items[langStr]);
 
     //load:
     if(typeof words === "undefined") words = parseConfig(defaultConfig);

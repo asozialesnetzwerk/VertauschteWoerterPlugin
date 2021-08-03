@@ -50,6 +50,8 @@ employee: employer
 `
 };
 
+const CONFIG_KEYS = Object.keys(defaults);
+
 // removes comments (// or # or /* */) and parses config lowercase
 function parseConfig(configStr) {
     const obj = {};

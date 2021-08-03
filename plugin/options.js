@@ -44,8 +44,13 @@ function updateStatus(text) {
 // stored in chrome.storage.
 function restoreOptions() {
     // Use default value words = defaultJson.
-    chrome.storage.local.get(defaults, function(items) {
-        displayOptions(items);
+
+    chrome.storage.local.get(CONFIG_KEYS, function (content) {
+        if (content) {
+            displayOptions(content);
+        } else {
+            displayOptions(defaults)
+        }
     });
 }
 
