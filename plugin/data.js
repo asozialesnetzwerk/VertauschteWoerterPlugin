@@ -81,7 +81,9 @@ function parseConfig(configStr) {
                 }
                 case "/": {
                     if (last === "/") {
-                        // fall through to normal comment with #
+                        handleLine(obj, configStr.substring(startOfStatement, i - 1));
+                        startOfStatement = -1;
+                        break;
                     } else {
                         if (last === "*") {
                             if (currentlyInMultilineComment) {
