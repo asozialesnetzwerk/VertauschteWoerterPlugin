@@ -1,5 +1,11 @@
-let words;
-let words_regex;
+// key (word to replace): value (replacement)
+let REPLACEMENT_OBJ;
+// regex to match all words
+let WORDS_REGEX;
+// count of groups in the words regex:
+let GROUP_COUNT;
+// array of words strings to replace:
+let WORDS;
 
 
 const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
@@ -12,16 +18,27 @@ chrome.storage.local.get(CONFIG_KEYS, function(items) {
     const langStr = items["multipleLangs"] ? getLanguageString() : "de";
     const defaultConfig = defaults[langStr];
 
-    words = parseConfig(items[langStr]);
+    try {
+        REPLACEMENT_OBJ = parseConfig(items[langStr]);
+    } catch(e) {
+        console.error(e);
+        REPLACEMENT_OBJ = parseConfig(defaults[langStr]);
+    }
 
     //load:
-    if(typeof words === "undefined") words = parseConfig(defaultConfig);
+    if(typeof REPLACEMENT_OBJ === "undefined") REPLACEMENT_OBJ = parseConfig(defaultConfig);
 
     // sort from long to short to replace the longer once with higher priority
-    const keys = Object.keys(words)
-    keys.sort((a,b) => b.length - a.length);
+    WORDS = Object.keys(REPLACEMENT_OBJ)
+    WORDS.sort((a,b) => b.length - a.length);
+    const words_as_named_groups = []
+    for (let i = 0; i < WORDS.length; i++) {
+        words_as_named_groups.push(`\(\?<word${i}>${WORDS[i]})`)
+    }
+    const regex_str = words_as_named_groups.join("|")
+    WORDS_REGEX = new RegExp(regex_str, "gui");
 
-    words_regex = new RegExp("(" + keys.join("|") + ")", "iu")
+    GROUP_COUNT = (new RegExp(regex_str + '|')).exec('').length - 1;
 
     replaceVertauschteWoerter(document.body);
     document.title = replaceText(document.title);
@@ -71,19 +88,40 @@ observer.observe(document.body,{
 
 
 function replaceText(input) {
-    return input.replace(words_regex, (word) => {
-        const replacedWord = words[word.toLowerCase()];
+    return input.replace(WORDS_REGEX, replaceWord)
+}
 
-        const word_split = word.split(" ");
-        const replacement_split = replacedWord.split(" ");
-        if (word_split.length === replacement_split.length) {
-            for (let i = 0; i < word_split.length; i++) {
-                replacement_split[i] = adaptCase(word_split[i], replacement_split[i]);
-            }
-            return replacement_split.join(" ")
+function replaceWord(match) {
+    let replacedWord;
+
+    // groups object
+    const groups = arguments[GROUP_COUNT + 3];
+
+    for (let [key, value] of Object.entries(groups)) {
+        if (typeof value == "string") {
+            replacedWord = REPLACEMENT_OBJ[
+                WORDS[key.substr("word".length)]
+                ];
+            break;
         }
-        return adaptCase(word, replacedWord);
-    })
+    }
+
+    if (typeof replacedWord === "undefined") {
+        replacedWord = REPLACEMENT_OBJ[match.toLowerCase()];
+        if (typeof replacedWord === "undefined") {
+            return match
+        }
+    }
+
+    const word_split = match.split(" ");
+    const replacement_split = replacedWord.split(" ");
+    if (word_split.length === replacement_split.length) {
+        for (let i = 0; i < word_split.length; i++) {
+            replacement_split[i] = adaptCase(word_split[i], replacement_split[i]);
+        }
+        return replacement_split.join(" ")
+    }
+    return adaptCase(match, replacedWord);
 }
 
 function strIsUppercase(str) {

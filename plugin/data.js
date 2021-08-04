@@ -2,51 +2,60 @@ const languages = ["de", "en"];
 
 const defaults = {
     multipleLangs: false,
-    de: `aggressiv: attraktiv
+    de: `/*
+    "<=>" heißt, dass die Wörter mit einander vertauscht werden sollen.
+    "=>" heißt, dass das erste Wort durch das zweite Wort ersetzt werden soll.
+    "<=" heißt, dass das zweite Wort durch das erste Wort ersetzt werden soll.  
+    Das zu ersetzende Wort kann Regex-Syntax enthalten und muss ein valides Regex sein.
+*/
+    
+aggressiv <=> attraktiv
 
-amüsant: relevant
-amüsanz: relevanz
+amüsant <=> relevant
+amüsanz <=> relevanz
 
-ministerium: mysterium
-ministerien: mysterien
+ministerium <=> mysterium
+ministerien <=> mysterien
 
-bundestag: schützenverein
+bundestag <=> schützenverein
 
-ironisch: erotisch
-ironien: erotiken
-ironie: erotik
-ironiker: erotiker
+ironisch <=> erotisch
+ironien <=> erotiken
+ironie <=> erotik
+ironiker <=> erotiker
 
-problem: ekzem
+problem <=> ekzem
 
-kritisch: kryptisch
-kritik: kryptik
+kritisch <=> kryptisch
+kritik <=> kryptik
 
-provozier: produzier
+provozier <=> produzier
 
-arbeitnehmer: arbeitgeber
-arbeitsnehmer: arbeitsgeber
+arbeitnehmer <=> arbeitgeber
+arbeitsnehmer <=> arbeitsgeber
+
+# Bj(ö|oe)rn H(ö|oe)cke => Bernd Höcke
 `, en: `
-aggressive: attraktiv
+aggressive <=> attraktiv
     
-amusing: relevant
-amusement: relevance
+amusing <=> relevant
+amusement <=> relevance
     
-ministry: mystery
-ministries: mysteries
+ministry <=> mystery
+ministries <=> mysteries
     
-problem: eczema
+problem <=> eczema
 
-ironic: erotic
-irony: erotica
-erotica: erotics
+ironic <=> erotic
+irony <=> erotica
+erotica <=> erotics
     
-critic: cryptic
-criticism: cryptic
+critic <=> cryptic
+criticism <=> cryptic
     
-provocat: produce
+provocat <=> produce
     
-employee: employer
+employee <=> employer
 `
 };
 
@@ -126,17 +135,37 @@ function parseConfig(configStr) {
     return obj;
 }
 
+split_regex = /\s*(<=>|<=|=>)\s*/g
 function handleLine(obj, line) {
     if (line.length === 0) return;
 
-    const words = line.split(/\s*:\s*/g);
-    if (words.length < 2) {
-        throw `"${line}" doesn't contain ":"`
-    } else if (words.length > 2) {
-        throw `"${line} is invalid`;
-    } else {
-        obj[words[0]] = words[1];
-        obj[words[1]] = words[0];
+    let match = line.match(split_regex)
+    if (!match || match.length === 0) {
+        throw `"${line}" doesn't contain "<=>", "<=" or "=>"`
+    } else if (match.length > 1) {
+        throw `"${line} is invalid as it contains too many values.`;
+    }
+
+    const words = line.split(match[0]);
+    switch(match[0].trim()) {
+        case ":":
+        case "<=>": {
+            // create RegExp to ensure that it is valid regex.
+            new RegExp(words[0])
+            new RegExp(words[1])
+            obj[words[0]] = words[1];
+            obj[words[1]] = words[0];
+            break;
+        }
+        case "<=": {
+            new RegExp(words[1])
+            obj[words[1]] = words[0];
+            break;
+        }
+        case "=>": {
+            new RegExp(words[0])
+            obj[words[0]] = words[1];
+        }
     }
 }
 
@@ -147,8 +176,13 @@ function objToStr(obj) {
     const keys = Object.keys(obj);
     for (const key of keys) {
         if (!already.includes(key)) {
-            already.push(key, obj[key]);
-            strBuilder.push(`${key}: ${obj[key]}`);
+            if (keys.includes(obj[key]) && key === obj[obj[key]]) {
+                already.push(key, obj[key]);
+                strBuilder.push(`${key} <=> ${obj[key]}`);
+            } else {
+                already.push(key);
+                strBuilder.push(`${key} => ${obj[key]}`);
+            }
         }
     }
     return strBuilder.join("\n");
