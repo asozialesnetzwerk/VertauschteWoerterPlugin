@@ -37,7 +37,7 @@ function updateStatus(text) {
 
     setTimeout(function() {
         status.innerText = "";
-    }, 1500);
+    }, 3200);
 }
 
 // Restores select box and checkbox state using the preferences
