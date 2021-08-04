@@ -7,15 +7,16 @@ const defaults = {
     "=>" heißt, dass das erste Wort durch das zweite Wort ersetzt werden soll.
     "<=" heißt, dass das zweite Wort durch das erste Wort ersetzt werden soll.  
     Das zu ersetzende Wort kann Regex-Syntax enthalten und muss ein valides Regex sein.
+    Achtung: Alle Buchstaben werden als Kleinbuchstaben interpretiert und Leerzeichen vor und nach Wörtern werden entfernt.
 */
-    
+
 aggressiv <=> attraktiv
 
 amüsant <=> relevant
 amüsanz <=> relevanz
 
-ministerium <=> mysterium
-ministerien <=> mysterien
+arbeitnehmer <=> arbeitgeber
+arbeitsnehmer <=> arbeitsgeber
 
 bundestag <=> schützenverein
 
@@ -24,17 +25,18 @@ ironien <=> erotiken
 ironie <=> erotik
 ironiker <=> erotiker
 
-problem <=> ekzem
-
 kritisch <=> kryptisch
 kritik <=> kryptik
 
-provozier <=> produzier
+ministerium <=> mysterium
+ministerien <=> mysterien
 
-arbeitnehmer <=> arbeitgeber
-arbeitsnehmer <=> arbeitsgeber
+problem <=> ekzem
 
-# Bj(ö|oe)rn H(ö|oe)cke => Bernd Höcke
+# provozier <=> produzier
+
+
+# bj(ö|oe)rn h(ö|oe)cke => bernd höcke
 `, en: `
 aggressive <=> attraktiv
     
@@ -185,5 +187,7 @@ function objToStr(obj) {
             }
         }
     }
+    strBuilder.sort()
+
     return strBuilder.join("\n");
 }
