@@ -13,6 +13,19 @@
             display: flex;
             flex-direction: column;
         }
+        .button-container {
+            float: left;
+        }
+        button {
+            width: 49%;
+            display: inline-block;
+        }
+        #save {
+            margin-left: 1%;
+        }
+        #status {
+            height: 30px;
+        }
     </style>
 </head>
 
@@ -30,8 +43,10 @@
 
     <div id="status"></div>
 
-    <button id="save">Save</button>
-    <button id="reset">Reset</button>
+    <div class="button-container">
+        <button id="save">Save</button>
+        <button id="reset">Reset</button>
+    </div>
 
     <script src="data.js"></script>
     <script src="options.js"></script>
