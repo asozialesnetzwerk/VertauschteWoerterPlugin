@@ -64,11 +64,13 @@ function stringToLanguage(langStr) {
 
 function replaceVertauschteWoerter(e) {
     if(void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)){
-        if(e.hasChildNodes()){
-            const childes = e.childNodes;
-            for(let n = 0; n < childes.length; n++) replaceVertauschteWoerter(childes[n])
+        if (e.tagName !== "TEXTAREA" && e.tagName !== "SCRIPT") {
+            if (e.hasChildNodes()) {
+                const childes = e.childNodes;
+                for (let n = 0; n < childes.length; n++) replaceVertauschteWoerter(childes[n])
+            }
+            if (3 === e.nodeType) e.nodeValue = replaceText(e.nodeValue);
         }
-        if(3 === e.nodeType) e.nodeValue= replaceText(e.nodeValue);
     }
 }
 
