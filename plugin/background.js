@@ -34,18 +34,17 @@ problem <=> ekzem
 # bj(ö|oe)rn h(ö|oe)cke => bernd höcke
 `;
 
-async function setupPyode() {
-    console.log(1, new Date())
+const pyodide = []
 
-    let pyodide = await loadPyodide({
+async function startPyodide() {
+
+    pyodide[0] = await loadPyodide({
         indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/",
         fullStdLib : false
     });
 
-    console.log(2, new Date())
-
     // run the code stolen from https://github.com/asozialesnetzwerk/an-website/blob/ee320969fc570b343c4c9f4b58e4d78e8f26609d/an_website/swapped_words/sw_config_file.py
-    await pyodide.runPythonAsync(`
+    await pyodide[0].runPythonAsync(`
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -406,23 +405,46 @@ class SwappedWordsConfig:
         return self.lines == other.lines
     
     `)
-    console.log(3, new Date())
 
-    return {
-        pyodide: pyodide,
-        getConfigStr: (minified) => {
-            if (minified) {
-                return pyodide.runPython("config.to_config_str(True)");
-            }
-            return pyodide.runPython("config.to_config_str(False)");
-        },
-        setConfig: (configStr) => {
-            configStr = configStr.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-            return pyodide.runPython(`config = SwappedWordsConfig("""${configStr}""")`);
-        },
-        swapWords: (text) => {
-            text = text.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
-            return pyodide.runPython(`config.swap_words("""${text}""")`);
-        }
-    }
+    const configStr = defaultConfig.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    await (await getPyodide()).runPythonAsync(`config = SwappedWordsConfig("""${configStr}""")`)
 }
+
+async function getConfigStr(minified) {
+    if (minified) {
+        return await (await getPyodide()).runPythonAsync("config.to_config_str(True)");
+    }
+    return await (await getPyodide()).runPythonAsync("config.to_config_str(False)");
+}
+
+async function setConfig (configStr) {
+    configStr = configStr.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+    await (await getPyodide()).runPythonAsync(`config = SwappedWordsConfig("""${configStr}""")`);
+}
+
+async function swapWords(text) {
+    text = text.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+    return await (await getPyodide()).runPythonAsync(`config.swap_words("""${text}""")`);
+}
+
+async function getPyodide() {
+    if (pyodide.length === 0) {
+        await startPyodide()
+    }
+    return pyodide[0]
+}
+
+chrome.storage.local.get(["config"], function(items) {
+    if (typeof items.config == "string") {
+        setConfig(items.config)
+    }
+});
+
+async function handleMessage(request, sender, sendResponse) {
+    let response = await swapWords(request)
+    console.log("Message from the content script: ", request, response);
+    sendResponse(response);
+}
+
+chrome.runtime.onMessage.addListener(handleMessage);
+
