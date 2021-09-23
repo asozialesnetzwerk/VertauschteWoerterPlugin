@@ -34,7 +34,7 @@ problem <=> ekzem
 # bj(ö|oe)rn h(ö|oe)cke => bernd höcke
 `;
 
-async function getPyodide(config_str) {
+async function setupPyode() {
     console.log(1, new Date())
 
     let pyodide = await loadPyodide({
@@ -406,23 +406,23 @@ class SwappedWordsConfig:
         return self.lines == other.lines
     
     `)
-
-    config_str = config_str.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
-    await pyodide.runPythonAsync(`config = SwappedWordsConfig("""${config_str}""")`)
-
-    pyodide.getConfigStr = (minified) => {
-        if (minified) {
-            return pyodide.runPython("config.to_config_str(True)");
-        }
-        return pyodide.runPython("config.to_config_str(False)");
-    }
-
-    pyodide.swapWords = (text) => {
-        text = text.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
-        return pyodide.runPython(`config.swap_words("""${text}""")`);
-    }
-
     console.log(3, new Date())
 
-    return pyodide
+    return {
+        pyodide: pyodide,
+        getConfigStr: (minified) => {
+            if (minified) {
+                return pyodide.runPython("config.to_config_str(True)");
+            }
+            return pyodide.runPython("config.to_config_str(False)");
+        },
+        setConfig: (configStr) => {
+            configStr = configStr.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+            return pyodide.runPython(`config = SwappedWordsConfig("""${configStr}""")`);
+        },
+        swapWords: (text) => {
+            text = text.replace(/\\/g, "\\\\").replace(/"/g, '\\"')
+            return pyodide.runPython(`config.swap_words("""${text}""")`);
+        }
+    }
 }

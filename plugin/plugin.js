@@ -7,9 +7,13 @@ chrome.storage.local.get(["config"], function(items) {
 });
 
 async function startReplacing(config) {
-    const pyodide = await getPyodide(config);
-    document.title = pyodide.swapWords(document.title);
-    await replaceVertauschteWoerter(document.body, pyodide);
+    const swObj = await setupPyode();
+    swObj.setConfig(config)
+
+    console.log()
+
+    document.title = swObj.swapWords(document.title);
+    await replaceVertauschteWoerter(document.body, swObj);
 
     console.log(4, new Date())
 
@@ -19,7 +23,7 @@ async function startReplacing(config) {
         for (let t = 0; t < r; t++) {
             const n = e[t].addedNodes.length;
             for (let o = 0; o < n; o++) {
-                replaceVertauschteWoerter(e[t].addedNodes[o], pyodide)
+                replaceVertauschteWoerter(e[t].addedNodes[o], swObj)
             }
         }
     });
@@ -29,14 +33,14 @@ async function startReplacing(config) {
     });
 }
 
-async function replaceVertauschteWoerter(e, pyodide) {
+async function replaceVertauschteWoerter(e, swObj) {
     if(void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)){
         if (e.tagName !== "TEXTAREA" && e.tagName !== "SCRIPT") {
             if (e.hasChildNodes()) {
                 const childes = e.childNodes;
-                for (let n = 0; n < childes.length; n++) await replaceVertauschteWoerter(childes[n], pyodide)
+                for (let n = 0; n < childes.length; n++) replaceVertauschteWoerter(childes[n], swObj)
             }
-            if (3 === e.nodeType) e.nodeValue = pyodide.swapWords(e.nodeValue);
+            if (3 === e.nodeType) e.nodeValue = swObj.swapWords(e.nodeValue);
         }
     }
 }
