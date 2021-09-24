@@ -1,6 +1,5 @@
-
-
 async function startReplacing() {
+    console.log(new Date())
     replaceText(document.title, (text) => {document.title = text;})
     await replaceVertauschteWoerter(document.body);
 
@@ -17,6 +16,7 @@ async function startReplacing() {
     observer.observe(document.body,{
         childList:!0,subtree:!0
     });
+    console.log(new Date())
 }
 
 async function replaceVertauschteWoerter(e) {
@@ -33,8 +33,27 @@ async function replaceVertauschteWoerter(e) {
 
 
 function replaceText(text, handleResponse) {
-    const sending = browser.runtime.sendMessage(text);
-    sending.then(handleResponse, (err) => {
+    // "http://localhost:8080/vertauschte-woerter/api/"
+    fetch("http://localhost:8080/vertauschte-woerter/api/", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+
+        //make sure to serialize your JSON body
+        body: JSON.stringify({
+            text: text
+        })
+    }).then( (response) => {
+        console.log(response)
+        response.json().then((json) => {
+            console.log(json)
+            handleResponse(json["replaced_text"])
+        }).catch((err) => {
+            console.error(err);
+        });
+    }).catch((err) => {
         console.error(err);
     });
 }

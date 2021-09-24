@@ -11,7 +11,7 @@
 		"96": "img/icon_96.png",
 		"128": "img/icon_128.png"
 	},
-    "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net/ 'unsafe-eval'; object-src 'self'",
+    "content_security_policy": "script-src 'self' https://cdn.jsdelivr.net/ http://localhost:8080/* https://joshix.asozial.org/* 'unsafe-eval'; object-src 'self'",
 	"background": {
 		"scripts": [
 			"lib/browser-polyfill.js",
