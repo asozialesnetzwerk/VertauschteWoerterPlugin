@@ -33,10 +33,8 @@ async function replaceVertauschteWoerter(e) {
 
 
 function replaceText(text, handleResponse) {
-    console.log(text);
-    resp = chrome.runtime.sendMessage(
-        text
-    ).then(handleResponse, (err) => {
+    const sending = browser.runtime.sendMessage(text);
+    sending.then(handleResponse, (err) => {
         console.error(err);
     });
 }

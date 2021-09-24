@@ -38,13 +38,13 @@ const pyodide = []
 
 async function startPyodide() {
 
-    pyodide[0] = await loadPyodide({
+    const py = await loadPyodide({
         indexURL : "https://cdn.jsdelivr.net/pyodide/v0.18.1/full/",
         fullStdLib : false
     });
 
     // run the code stolen from https://github.com/asozialesnetzwerk/an-website/blob/ee320969fc570b343c4c9f4b58e4d78e8f26609d/an_website/swapped_words/sw_config_file.py
-    await pyodide[0].runPythonAsync(`
+    await py.runPythonAsync(`
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
 # published by the Free Software Foundation, either version 3 of the
@@ -408,6 +408,9 @@ class SwappedWordsConfig:
 
     const configStr = defaultConfig.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
     await (await getPyodide()).runPythonAsync(`config = SwappedWordsConfig("""${configStr}""")`)
+
+    pyodide[0] = py
+    return py
 }
 
 async function getConfigStr(minified) {
@@ -427,24 +430,31 @@ async function swapWords(text) {
     return await (await getPyodide()).runPythonAsync(`config.swap_words("""${text}""")`);
 }
 
+function isPromise(promise) {
+    return !!promise && typeof promise.then === 'function'
+}
+
 async function getPyodide() {
     if (pyodide.length === 0) {
-        await startPyodide()
+        pyodide[0] = startPyodide()
+        return await pyodide[0]
     }
     return pyodide[0]
 }
 
-chrome.storage.local.get(["config"], function(items) {
-    if (typeof items.config == "string") {
-        setConfig(items.config)
-    }
-});
+//browser.storage.local.get(["config"], function(items) {
+//    if (typeof items.config == "string") {
+//        setConfig(items.config)
+//    }
+//});
 
 async function handleMessage(request, sender, sendResponse) {
-    let response = await swapWords(request)
-    console.log("Message from the content script: ", request, response);
+    console.log("Message from the content script: ", request, sender, sendResponse);
+    let response = await swapWords(request);
+
+    console.log(response)
     sendResponse(response);
 }
 
-chrome.runtime.onMessage.addListener(handleMessage);
+browser.runtime.onMessage.addListener(handleMessage);
 
