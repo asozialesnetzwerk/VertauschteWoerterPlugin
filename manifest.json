@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Vertauschte Woerter!",
-	"version": "3.0.3",
+	"version": "3.1.0",
 
 	"description": "Vertauscht Wörter auf Webseiten.",
 	"homepage_url": "https://github.com/asozialesnetzwerk/VertauschteWoerterPlugin",
@@ -35,7 +35,6 @@
 		"scripts": ["plugin/background.js"]
 	},
 
-
 	"permissions": [
 		"tabs",
 		"storage"
@@ -46,6 +45,7 @@
 		"browser_style": false,
 		"open_in_tab": true
 	},
+
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "vertauschte-woerter@asozial.org",
