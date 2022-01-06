@@ -4,6 +4,7 @@
 	"version": "3.0.3",
 
 	"description": "Vertauscht Wörter auf Webseiten.",
+	"homepage_url": "https://github.com/asozialesnetzwerk/VertauschteWoerterPlugin",
 
 	"icons": {
 		"16": "img/icon_16.png",
@@ -20,6 +21,21 @@
 		]
 	}],
 
+	"browser_action": {
+		"browser_style": true,
+		"default_icon": {
+			"16": "img/icon_16.png",
+			"48": "img/icon_48.png",
+			"96": "img/icon_96.png"
+		},
+		"default_title": "Optionen"
+	},
+
+	"background": {
+		"scripts": ["plugin/background.js"]
+	},
+
+
 	"permissions": [
 		"tabs",
 		"storage"
@@ -27,6 +43,7 @@
 
 	"options_ui": {
 		"page": "plugin/options.html",
+		"browser_style": false,
 		"open_in_tab": true
 	},
 	"browser_specific_settings": {

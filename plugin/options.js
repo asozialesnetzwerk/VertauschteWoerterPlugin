@@ -46,10 +46,10 @@ function restoreOptions() {
     // Use default value words = defaultJson.
 
     chrome.storage.local.get(CONFIG_KEYS, function (content) {
-        if (content) {
+        if (content && Object.keys(content).length) {
             displayOptions(content);
         } else {
-            displayOptions(defaults)
+            displayOptions(defaults);
         }
     });
 }
