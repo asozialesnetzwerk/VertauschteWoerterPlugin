@@ -7,6 +7,14 @@ let GROUP_COUNT;
 // array of words strings to replace:
 let WORDS;
 
+if (window.location.host.toLowerCase().endsWith("wikipedia.org")) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("veaction") === "edit"
+        || params.get("action") === "edit"
+        || params.get("action") === "submit") {
+        throw "Don't replace while editing wikipedia.";
+    }
+}
 
 const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
 
