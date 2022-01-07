@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Vertauschte Woerter!",
-	"version": "3.1.0",
+	"version": "3.1.1",
 
 	"description": "Vertauscht Wörter auf Webseiten.",
 	"homepage_url": "https://github.com/asozialesnetzwerk/VertauschteWoerterPlugin",

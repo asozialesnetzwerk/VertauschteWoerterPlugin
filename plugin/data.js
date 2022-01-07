@@ -2,13 +2,11 @@ const languages = ["de", "en"];
 
 const defaults = {
     multipleLangs: false,
-    de: `/*
-    "<=>" heißt, dass die Wörter mit einander vertauscht werden sollen.
-    "=>" heißt, dass das erste Wort durch das zweite Wort ersetzt werden soll.
-    "<=" heißt, dass das zweite Wort durch das erste Wort ersetzt werden soll.  
-    Das zu ersetzende Wort kann Regex-Syntax enthalten und muss ein valides Regex sein.
-    Achtung: Alle Buchstaben werden als Kleinbuchstaben interpretiert und Leerzeichen vor und nach Wörtern werden entfernt.
-*/
+    de: `# "<=>" heißt, dass die Wörter mit einander vertauscht werden sollen.
+# "=>" heißt, dass das erste Wort durch das zweite Wort ersetzt werden soll.
+# Das zu ersetzende Wort kann Regex-Syntax enthalten und muss ein valides Regex sein.
+# Achtung: Alle Buchstaben werden als Kleinbuchstaben interpretiert und Leerzeichen vor und nach Wörtern werden entfernt.
+
 
 aggressiv <=> attraktiv
 
