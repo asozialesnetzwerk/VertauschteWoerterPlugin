@@ -71,8 +71,8 @@ function stringToLanguage(langStr) {
 }
 
 function replaceVertauschteWoerter(e) {
-    if(void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)){
-        if (e.tagName !== "TEXTAREA" && e.tagName !== "SCRIPT") {
+    if (void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)) {
+        if (e.tagName.toUpperCase() !== "TEXTAREA" && e.tagName.toUpperCase() !== "SCRIPT") {
             if (e.hasChildNodes()) {
                 const childes = e.childNodes;
                 for (let n = 0; n < childes.length; n++) replaceVertauschteWoerter(childes[n])
