@@ -65,7 +65,11 @@ const CONFIG_KEYS = Object.keys(defaults);
 function parseConfig(configStr) {
     const obj = {};
 
+    if (typeof configStr !== "string") {
+        configStr = String(configStr);
+    }
     configStr = configStr.toLowerCase().replaceAll(/\/\*[^/]*\*\//g, "");
+
 
     let currentlyInMultilineComment = false;
     let last = "";

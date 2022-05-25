@@ -7,16 +7,26 @@ let GROUP_COUNT;
 // array of words strings to replace:
 let WORDS;
 
-if (window.location.host.toLowerCase().endsWith("wikipedia.org")) {
+(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("veaction") === "edit"
         || params.get("action") === "edit"
         || params.get("action") === "submit") {
-        throw "Don't replace while editing wikipedia.";
+        throw "Don't replace while editing stuff.";
     }
-}
+})();
 
 const lang = stringToLanguage(document.getElementsByTagName("html")[0].lang);
+
+const observer = new MutationObserver(function (e) {
+    const r = e.length;
+    for (let t = 0; t < r; t++) {
+        const n = e[t].addedNodes.length;
+        for (let o = 0; o < n; o++) {
+            replaceOnNode(e[t].addedNodes[o])
+        }
+    }
+});
 
 chrome.storage.local.get(CONFIG_KEYS, function(items) {
     if (!items) {
@@ -26,12 +36,18 @@ chrome.storage.local.get(CONFIG_KEYS, function(items) {
     const langStr = items["multipleLangs"] ? getLanguageString() : "de";
     const defaultConfig = defaults[langStr];
 
-    try {
-        REPLACEMENT_OBJ = parseConfig(items[langStr]);
-    } catch(e) {
-        console.error(e);
-        REPLACEMENT_OBJ = parseConfig(defaults[langStr]);
+    if (typeof items[langStr] !== "string") {
+        REPLACEMENT_OBJ = parseConfig(defaultConfig);
+        console.debug("Using default config, as nothing is saved.")
+    } else {
+        try {
+            REPLACEMENT_OBJ = parseConfig(items[langStr]);
+        } catch(e) {
+            console.error("Saved config is invalid.", e);
+            REPLACEMENT_OBJ = parseConfig(defaultConfig);
+        }
     }
+    console.debug(REPLACEMENT_OBJ)
 
     //load:
     if(typeof REPLACEMENT_OBJ === "undefined") REPLACEMENT_OBJ = parseConfig(defaultConfig);
@@ -48,8 +64,14 @@ chrome.storage.local.get(CONFIG_KEYS, function(items) {
 
     GROUP_COUNT = (new RegExp(regex_str + '|')).exec('').length - 1;
 
-    replaceVertauschteWoerter(document.body);
     document.title = replaceText(document.title);
+    replaceOnNode(document.body);
+    console.debug("finished initial word swapping");
+
+    observer.observe(document.body,{
+      childList: true, subtree: true
+    });
+
 });
 
 function getLanguageString() {
@@ -70,39 +92,42 @@ function stringToLanguage(langStr) {
     return 0; // de as default
 }
 
-function replaceVertauschteWoerter(e) {
-    if (void 0 !== e && e && !(e.isContentEditable === !0|| null !== e.parentNode && e.parentNode.isContentEditable)) {
-        if (e.tagName.toUpperCase() !== "TEXTAREA" && e.tagName.toUpperCase() !== "SCRIPT") {
-            if (e.hasChildNodes()) {
-                const childes = e.childNodes;
-                for (let n = 0; n < childes.length; n++) replaceVertauschteWoerter(childes[n])
+function replaceOnNode(node) {
+    const queue = [node];
+    while (queue.length > 0) {
+        try {
+            node = queue.pop();
+
+            if (
+                node !== undefined && node
+                // do not replace if users can edit the content of e
+                && !node.isContentEditable
+                && (null === node.parentNode || !node.parentNode.isContentEditable)
+                && String(node.tagName).toUpperCase() !== "TEXTAREA"
+                && String(node.tagName).toUpperCase() !== "SCRIPT"
+            ) {
+                for (const child of node.childNodes)
+                    queue.push(child);
+
+                if (node.TEXT_NODE === node.nodeType)
+                    node.nodeValue = replaceText(node.nodeValue);
             }
-            if (3 === e.nodeType) e.nodeValue = replaceText(e.nodeValue);
+        } catch (e) {
+            console.error(e);
         }
     }
 }
 
-const observer = new MutationObserver(function (e) {
-    const r = e.length;
-    for (let t = 0; t < r; t++) {
-        const n = e[t].addedNodes.length;
-        for (let o = 0; o < n; o++) {
-            replaceVertauschteWoerter(e[t].addedNodes[o])
-        }
-    }
-});
-
-observer.observe(document.body,{
-    childList:!0,subtree:!0
-});
-
 
 function replaceText(input) {
+    if (typeof input !== "string")
+        return input;
     return input.replace(WORDS_REGEX, replaceWord)
 }
 
 function replaceWord(match) {
     let replacedWord;
+    //console.debug(match);
 
     // groups object
     const groups = arguments[GROUP_COUNT + 3];
